@@ -1,0 +1,19 @@
+# IDEs y editores
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Java / Maven
+backend/target
+backend/*.jar
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Logs y bases de datos
+*.log
+data/
