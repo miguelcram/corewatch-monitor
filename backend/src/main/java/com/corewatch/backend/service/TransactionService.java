@@ -16,12 +16,13 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final TransactionNotificationService notificationService;
 
     // Regla de negocio: importes superiores a 10.000 € activan alerta de fraude
     private static final BigDecimal FRAUD_THRESHOLD = new BigDecimal("10000.00");
 
     @Transactional
-    public Transaction processTransaction(TransactionRequestDTO request, String clientIP) {
+    public Transaction processTransaction(TransactionRequestDTO request, String clientIp) {
         boolean isSuspicious = request.getAmount().compareTo(FRAUD_THRESHOLD) > 0;
         int calculatedRisk = isSuspicious ? 85 : 10;
         TransactionStatus status = isSuspicious ? TransactionStatus.FLAGGED : TransactionStatus.APPROVED;
@@ -31,13 +32,15 @@ public class TransactionService {
                 .destinationAccount(request.getDestinationAccount())
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
-                .clientIp(clientIP)
+                .clientIp(clientIp)
                 .riskScore(calculatedRisk)
                 .isFraudulent(isSuspicious)
                 .status(status)
                 .build();
 
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        notificationService.broadcastTransaction(savedTransaction);
+        return savedTransaction;
     }
 
     @Transactional(readOnly = true)
