@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: corewatch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: corewatch_db
+      POSTGRES_USER: corewatch_user
+      POSTGRES_PASSWORD: corewatch_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
