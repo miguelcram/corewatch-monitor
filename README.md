@@ -11,6 +11,18 @@
 
 ---
 
+## 📸 Vista Previa del Sistema
+
+| Feed en Vivo con Métricas KPI | Modal de Auditoría SOC |
+| :---: | :---: |
+| ![Live Feed Dashboard](docs/screenshots/CW-1.png) | ![Detalle de Transacción](docs/screenshots/CW-4.png) |
+
+| Filtrado Activo de Alertas (`FLAGGED`) | Detalle de Operación Nominal |
+| :---: | :---: |
+| ![Filtrado Flagged](docs/screenshots/CW-3.png) | ![Detalle Aprobada](docs/screenshots/CW-2.png) |
+
+---
+
 ## Indice
 
 - [Arquitectura del Sistema](#-arquitectura-del-sistema)
