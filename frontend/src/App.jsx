@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShieldAlert, ShieldCheck, Activity, ArrowRightLeft } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, Activity, ArrowRightLeft, DollarSign, TrendingUp } from 'lucide-react';
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
@@ -11,6 +11,13 @@ export default function App() {
     if (filterStatus === 'ALL') return true;
     return tx.status === filterStatus;
   });
+
+  // Cálculos de KPIs en tiempo real
+  const totalVolume = transactions.reduce((acc, tx) => acc + (Number(tx.amount) || 0), 0);
+  const flaggedCount = transactions.filter((tx) => tx.status === 'FLAGGED').length;
+  const fraudRate = transactions.length > 0
+    ? ((flaggedCount / transactions.length) * 100).toFixed(1)
+    : '0.0';
 
   useEffect(() => {
     //Conexion nativa al endponit SSE de SpringBoot
@@ -58,6 +65,61 @@ export default function App() {
             </span>
           </div>
         </header>
+
+        {/* Resumen de Trjetas KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          {/* Tarjeta 1 - Volumen total */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between shadow-lg">
+            <div>
+              <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Volumen Monitorizado</p>
+              <h3 className="text-xl font-bold font-mono text-slate-100 mt-1">
+                {totalVolume.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR
+              </h3>
+            </div>
+
+            <div className="p-3 bg-indigo-500/10 rounded-lg border border-indigo-500/20 text-indigo-400">
+              <DollarSign className="w-5 h-5"/>
+            </div>
+          </div>
+
+          {/* Tarjeta 2 - Tasa de alertas */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between shadow-lg">
+            <div>
+              <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Tasa de Fraude</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h3 className="text-xl font-bold font-mono text-slate-100">{fraudRate}%</h3>
+                <span className="text-xs font-mono text-slate-500">del total</span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 text-amber-400">
+              <TrendingUp className="w-5 h-5"/>
+            </div>
+          </div>
+
+          {/* Tarjeta 3 - Alertas destacadas */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-center justify-between shadow-lg">
+            <div>
+              <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Alertas Activas</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h3 className={`text-xl font-bold font-mono ${flaggedCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  {flaggedCount}
+                </h3>
+                <span className="text-xs font-mono text-slate-500">operaciones de riesgo</span>
+              </div>
+            </div>
+
+            <div className={`p-3 rounded-lg border ${
+              flaggedCount > 0
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+            }`}>
+              <ShieldAlert className="w-5 h-5"/>
+            </div>
+          </div>
+
+        </div>
 
         {/* Tabla de operaciones en tiempo real */}
         <main className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
